@@ -36,7 +36,7 @@ public class SecurityConfig {
     private String signerKey;
 
     @Autowired
-    private JwtDecoder jwtDecoder;
+    private CustomJwtDecoder jwtDecoder;
 
 
     /**
