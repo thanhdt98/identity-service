@@ -1,5 +1,6 @@
 package com.thanhxv.configuration;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,11 +29,14 @@ import javax.crypto.spec.SecretKeySpec;
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
             "/users",
-            "/auth/token", "auth/introspect"
+            "/auth/token", "auth/introspect", "auth/logout"
     };
 
     @Value("${jwt.signerKey}")
     private String signerKey;
+
+    @Autowired
+    private JwtDecoder jwtDecoder;
 
 
     /**
@@ -51,7 +55,7 @@ public class SecurityConfig {
                          * neu custom thanh ROLE_ thi co the dung .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") vi Spring se tu tim dc role ROLE_ADMIN
                          */
                         /**
-                         * comment due to use Method Authorization
+                         * comment due to use Method Authorization @PreAuthorization
                          */
 //                        .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
 //                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
@@ -75,7 +79,13 @@ public class SecurityConfig {
         httpSecurity.oauth2ResourceServer(oauth2ResourceServer ->
                 oauth2ResourceServer
                         .jwt(jwtConfigurer -> jwtConfigurer
-                                .decoder(jwtDecoder())
+                                /**
+                                 * explain
+                                 * comment due to add logout feature
+                                 * instead of, using CustomJwtDecoder for check token invalid and has been logout
+                                 */
+//                                .decoder(jwtDecoder())
+                                .decoder(jwtDecoder)
                                 .jwtAuthenticationConverter(jwtAuthenticationConverter())
                         )
                         /**
@@ -98,27 +108,37 @@ public class SecurityConfig {
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter jwtGrantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        /**
+         * Do co Role va Permission nen se add prefix ROLE_ cho Role khi gen token
+         */
+//        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
         jwtAuthenticationConverter.setJwtGrantedAuthoritiesConverter(jwtGrantedAuthoritiesConverter);
         return jwtAuthenticationConverter;
     }
 
-    @Bean
-    JwtDecoder jwtDecoder() {
-        /**
-         * explain
-         * HS512 la thuat toan khi gen token
-         */
-        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-
-        NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder
-                .withSecretKey(secretKeySpec)
-                .macAlgorithm(MacAlgorithm.HS512)
-                .build();
-        return nimbusJwtDecoder;
-    }
+    /**
+     * explain
+     * comment due to add logout feature
+     * instead of, using CustomJwtDecoder for check token invalid and has been logout
+     * @return
+     */
+//    @Bean
+//    JwtDecoder jwtDecoder() {
+//        /**
+//         * explain
+//         * HS512 la thuat toan khi gen token
+//         */
+//        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+//
+//        NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder
+//                .withSecretKey(secretKeySpec)
+//                .macAlgorithm(MacAlgorithm.HS512)
+//                .build();
+//        return nimbusJwtDecoder;
+//    }
 
     @Bean
     PasswordEncoder passwordEncoder() {

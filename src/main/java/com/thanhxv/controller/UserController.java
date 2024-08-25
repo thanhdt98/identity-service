@@ -3,6 +3,7 @@ package com.thanhxv.controller;
 import com.thanhxv.dto.request.ApiResponse;
 import com.thanhxv.dto.request.UserCreationRequest;
 import com.thanhxv.dto.request.UserUpdateRequest;
+import com.thanhxv.dto.response.PermissionResponse;
 import com.thanhxv.dto.response.UserResponse;
 import com.thanhxv.entity.User;
 import com.thanhxv.service.UserService;
@@ -25,11 +26,10 @@ public class UserController {
     UserService userService;
 
     @PostMapping()
-    ApiResponse<User> createUser(@RequestBody @Valid UserCreationRequest request) {
-        ApiResponse response = new ApiResponse();
-
-        response.setResult(userService.createUser(request));
-        return response;
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.createUser(request))
+                .build();
     }
 
     @GetMapping()

@@ -2,6 +2,7 @@ package com.thanhxv.configuration;
 
 import com.thanhxv.entity.User;
 import com.thanhxv.enums.Role;
+import com.thanhxv.repository.RoleRepository;
 import com.thanhxv.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.Set;
 @Log4j2
 public class ApplicationInitConfig {
 
+    RoleRepository roleRepository;
     PasswordEncoder passwordEncoder;
 
     @Bean
@@ -34,7 +36,7 @@ public class ApplicationInitConfig {
                 User user = User.builder()
                         .username("admin")
                         .password(passwordEncoder.encode("admin"))
-                        .roles(roles)
+                        .roles(new HashSet<>(roleRepository.findAll()))
                         .build();
 
                 userRepository.save(user);

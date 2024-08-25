@@ -8,6 +8,7 @@ import com.thanhxv.enums.Role;
 import com.thanhxv.exception.AppException;
 import com.thanhxv.exception.ErrorCode;
 import com.thanhxv.mapper.UserMapper;
+import com.thanhxv.repository.RoleRepository;
 import com.thanhxv.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,29 +32,29 @@ import java.util.Set;
 @Log4j2
 public class UserService {
     UserRepository userRepository;
+    RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
-    public User createUser(UserCreationRequest request) {
+    public UserResponse createUser(UserCreationRequest request) {
         if (userRepository.existsByUsername(request.getUsername())) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Set<String> roles = new HashSet<>();
-        roles.add(Role.USER.name());
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
 
-        user.setRoles(roles);
-
-        return userRepository.save(user);
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
     /**
      * explain @PreAuthorize("hasRole('ADMIN')") spring se tao 1 proxy ngay trc luc call method getAllUsers() de kiem tra role
      * @return
      */
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('CREATE_POST')")
     public List<UserResponse> getAllUsers() {
         log.info("In method getAllUsers service");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
@@ -75,6 +76,11 @@ public class UserService {
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
         userMapper.updateUser(user, request);
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        var roles = roleRepository.findAllById(request.getRoles());
+        user.setRoles(new HashSet<>(roles));
+
         return userMapper.toUserResponse(userRepository.save(user));
     }
 }

@@ -15,6 +15,7 @@ import org.mapstruct.MappingTarget;
  */
 @Mapper(componentModel = "spring")
 public interface UserMapper {
+    @Mapping(target = "roles", ignore = true)
     User toUser(UserCreationRequest request);
 
     /**
@@ -22,6 +23,7 @@ public interface UserMapper {
      * @param user
      * @param request
      */
+    @Mapping(target = "roles", ignore = true)
     void updateUser(@MappingTarget User user, UserUpdateRequest request);
 
     /**
@@ -30,7 +32,7 @@ public interface UserMapper {
      * @param user
      * @return
      */
-    @Mapping(source = "firstName", target = "lastName")
+//    @Mapping(source = "firstName", target = "lastName")
 //    @Mapping(target = "lastName", ignore = true)
     UserResponse toUserResponse(User user);
 }

@@ -7,11 +7,14 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.thanhxv.dto.request.AuthenticationRequest;
 import com.thanhxv.dto.request.IntrospectRequest;
+import com.thanhxv.dto.request.LogoutRequest;
 import com.thanhxv.dto.response.AuthenticationResponse;
 import com.thanhxv.dto.response.IntrospectResponse;
+import com.thanhxv.entity.InvalidatedToken;
 import com.thanhxv.entity.User;
 import com.thanhxv.exception.AppException;
 import com.thanhxv.exception.ErrorCode;
+import com.thanhxv.repository.InvalidatedTokenRepository;
 import com.thanhxv.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +32,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -36,6 +40,7 @@ import java.util.StringJoiner;
 @Log4j2
 public class AuthenticationService {
     UserRepository userRepository;
+    InvalidatedTokenRepository invalidatedTokenRepository;
 
     /**
      * danh dau de k inject vao constructor
@@ -47,16 +52,14 @@ public class AuthenticationService {
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
 
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
+        boolean isValid = true;
+        try {
+            verifyToken(token);
+        } catch (AppException e) {
+            isValid = false;
+        }
         return IntrospectResponse.builder()
-                .valid(verified && expiration.after(new Date()))
+                .valid(isValid)
                 .build();
     }
 
@@ -75,6 +78,39 @@ public class AuthenticationService {
                 .token(token)
                 .authenticated(authenticated)
                 .build();
+    }
+
+    public void logout(LogoutRequest request) throws ParseException, JOSEException {
+        SignedJWT signToken = verifyToken(request.getToken());
+
+        String jit = signToken.getJWTClaimsSet().getJWTID();
+        Date expiryTime = signToken.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    private SignedJWT verifyToken(String token) throws ParseException, JOSEException {
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY);
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiration = signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        if(!(verified && expiration.after(new Date()))) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+        }
+
+        return signedJWT;
     }
 
     private String generateToken(User user) {
@@ -98,6 +134,7 @@ public class AuthenticationService {
                  * Tuy nhien co the custom lai trong SecurityConfig.class
                  */
                 .claim("scope", buildScope(user))
+                .jwtID(UUID.randomUUID().toString())
                 .build();
         Payload payload = new Payload(jwtClaimsSet.toJSONObject());
 
@@ -121,7 +158,18 @@ public class AuthenticationService {
     private String buildScope(User user) {
         StringJoiner stringJoiner = new StringJoiner(" ");
         if (!CollectionUtils.isEmpty(user.getRoles())) {
-            user.getRoles().forEach(stringJoiner::add);
+            user.getRoles().forEach(role -> {
+                /**
+                 * De phan biet Role va Permission thi se add prefix ROLE_ cho role
+                 * => can sua jwtAuthenticationConverter() de khong add prefix cho cac Role va Permission
+                 * => dung @PreAuthorize("hasAuthority('APPROVE_POST')") de kiem tra chinh xac
+                 * vi neu hasRole se add them prefix khi check
+                 */
+                stringJoiner.add("ROLE_" + role.getName());
+                if (!CollectionUtils.isEmpty(role.getPermissions())) {
+                    role.getPermissions().forEach(permission -> stringJoiner.add(permission.getName()));
+                }
+            });
         }
         return stringJoiner.toString();
     }

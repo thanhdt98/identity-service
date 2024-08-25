@@ -1,6 +1,7 @@
 package com.thanhxv.exception;
 
 import com.thanhxv.dto.request.ApiResponse;
+import jakarta.validation.ConstraintViolation;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.nio.file.AccessDeniedException;
 import java.util.Map;
+import java.util.Objects;
 
 @ControllerAdvice
 @Log4j2
@@ -48,41 +50,41 @@ public class GlobalExceptionHandler {
                         .build());
     }
 
-//    @ExceptionHandler(value = MethodArgumentNotValidException.class)
-//    ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
-//        String enumKey = exception.getFieldError().getDefaultMessage();
-//
-//        ErrorCode errorCode = ErrorCode.INVALID_KEY;
-//        Map<String, Object> attributes = null;
-//        try {
-//            errorCode = ErrorCode.valueOf(enumKey);
-//
-//            var constraintViolation =
-//                    exception.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
-//
-//            attributes = constraintViolation.getConstraintDescriptor().getAttributes();
-//
-//            log.info(attributes.toString());
-//
-//        } catch (IllegalArgumentException e) {
-//
-//        }
-//
-//        ApiResponse apiResponse = new ApiResponse();
-//
-//        apiResponse.setCode(errorCode.getCode());
-//        apiResponse.setMessage(
-//                Objects.nonNull(attributes)
-//                        ? mapAttribute(errorCode.getMessage(), attributes)
-//                        : errorCode.getMessage());
-//
-//        return ResponseEntity.badRequest().body(apiResponse);
-//    }
-//
-//    private String mapAttribute(String message, Map<String, Object> attributes) {
-//        String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
-//
-//        return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
-//    }
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    ResponseEntity<ApiResponse> handlingValidation(MethodArgumentNotValidException exception) {
+        String enumKey = exception.getFieldError().getDefaultMessage();
+
+        ErrorCode errorCode = ErrorCode.INVALID_KEY;
+        Map<String, Object> attributes = null;
+        try {
+            errorCode = ErrorCode.valueOf(enumKey);
+
+            var constraintViolation =
+                    exception.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
+
+            attributes = constraintViolation.getConstraintDescriptor().getAttributes();
+
+            log.info(attributes.toString());
+
+        } catch (IllegalArgumentException e) {
+
+        }
+
+        ApiResponse apiResponse = new ApiResponse();
+
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(
+                Objects.nonNull(attributes)
+                        ? mapAttribute(errorCode.getMessage(), attributes)
+                        : errorCode.getMessage());
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
+
+    private String mapAttribute(String message, Map<String, Object> attributes) {
+        String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
+
+        return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
+    }
 
 }

@@ -1,21 +1,24 @@
-package com.thanhxv.dto.response;
+package com.thanhxv.entity;
 
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserResponse {
-    String id;
-    String username;
-    String firstName;
-    String lastName;
-    LocalDate dob;
-    Set<RoleResponse> roles;
+@Entity
+public class Role {
+    @Id
+    String name;
+    String description;
+
+    @ManyToMany
+    Set<Permission> permissions;
 }
