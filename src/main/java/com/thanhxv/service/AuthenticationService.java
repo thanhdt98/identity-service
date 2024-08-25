@@ -8,6 +8,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.thanhxv.dto.request.AuthenticationRequest;
 import com.thanhxv.dto.request.IntrospectRequest;
 import com.thanhxv.dto.request.LogoutRequest;
+import com.thanhxv.dto.request.RefreshRequest;
 import com.thanhxv.dto.response.AuthenticationResponse;
 import com.thanhxv.dto.response.IntrospectResponse;
 import com.thanhxv.entity.InvalidatedToken;
@@ -91,6 +92,28 @@ public class AuthenticationService {
                 .expiryTime(expiryTime)
                 .build();
         invalidatedTokenRepository.save(invalidatedToken);
+    }
+
+    public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
+        var signJWT = verifyToken(request.getToken());
+
+        var jit = signJWT.getJWTClaimsSet().getJWTID();
+        var expiryTime = signJWT.getJWTClaimsSet().getExpirationTime();
+
+        InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                .id(jit)
+                .expiryTime(expiryTime)
+                .build();
+        invalidatedTokenRepository.save(invalidatedToken);
+
+        var username = signJWT.getJWTClaimsSet().getSubject();
+        var user = userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+
+        var token = generateToken(user);
+        return AuthenticationResponse.builder()
+                .token(token)
+                .authenticated(true)
+                .build();
     }
 
     private SignedJWT verifyToken(String token) throws ParseException, JOSEException {

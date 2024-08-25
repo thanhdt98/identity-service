@@ -1,10 +1,7 @@
 package com.thanhxv.controller;
 
 import com.nimbusds.jose.JOSEException;
-import com.thanhxv.dto.request.ApiResponse;
-import com.thanhxv.dto.request.AuthenticationRequest;
-import com.thanhxv.dto.request.IntrospectRequest;
-import com.thanhxv.dto.request.LogoutRequest;
+import com.thanhxv.dto.request.*;
 import com.thanhxv.dto.response.AuthenticationResponse;
 import com.thanhxv.dto.response.IntrospectResponse;
 import com.thanhxv.service.AuthenticationService;
@@ -42,5 +39,13 @@ public class AuthenticationController {
     ApiResponse<Void> logout(@RequestBody LogoutRequest request) throws ParseException, JOSEException {
         authenticationService.logout(request);
         return ApiResponse.<Void>builder().build();
+    }
+
+    @PostMapping("/refresh")
+    ApiResponse<AuthenticationResponse> logout(@RequestBody RefreshRequest request) throws ParseException, JOSEException {
+        AuthenticationResponse result = authenticationService.refreshToken(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
     }
 }
