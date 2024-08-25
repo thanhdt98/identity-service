@@ -43,13 +43,6 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//        httpSecurity
-//                .csrf(Customizer.withDefaults())
-//                .authorizeHttpRequests(authorize -> authorize
-//                        .anyRequest().authenticated()
-//                )
-//                .httpBasic(Customizer.withDefaults())
-//                .formLogin(Customizer.withDefaults());
 
         httpSecurity.authorizeHttpRequests(requests ->
                 requests.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
@@ -80,10 +73,17 @@ public class SecurityConfig {
          * 3. SCOPE_ co the custom thanh ROLE_ bang config .jwtAuthenticationConverter(jwtAuthenticationConverter())
          */
         httpSecurity.oauth2ResourceServer(oauth2ResourceServer ->
-                oauth2ResourceServer.jwt(jwtConfigurer -> jwtConfigurer
-                        .decoder(jwtDecoder())
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                )
+                oauth2ResourceServer
+                        .jwt(jwtConfigurer -> jwtConfigurer
+                                .decoder(jwtDecoder())
+                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                        )
+                        /**
+                         * explain khi authentication fail thi dieu huong di dau. o day chi can tra error message
+                         * can implements AuthenticationEntryPoint interface
+                         * chi dung o day nen k can tao bean
+                         */
+                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
         );
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);

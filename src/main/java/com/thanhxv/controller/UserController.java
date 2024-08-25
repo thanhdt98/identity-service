@@ -49,6 +49,11 @@ public class UserController {
         return userService.getUser(userId);
     }
 
+    @GetMapping("/myInfo")
+    UserResponse getMyInfo() {
+        return userService.getMyInfo();
+    }
+
     @PutMapping("/{userId}")
     UserResponse updateUser(@PathVariable(name = "userId") String userId,
                     @RequestBody UserUpdateRequest request) {
