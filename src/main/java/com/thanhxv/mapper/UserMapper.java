@@ -1,12 +1,13 @@
 package com.thanhxv.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+
 import com.thanhxv.dto.request.UserCreationRequest;
 import com.thanhxv.dto.request.UserUpdateRequest;
 import com.thanhxv.dto.response.UserResponse;
 import com.thanhxv.entity.User;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 /**
  * componentModel = "spring"
@@ -32,7 +33,7 @@ public interface UserMapper {
      * @param user
      * @return
      */
-//    @Mapping(source = "firstName", target = "lastName")
-//    @Mapping(target = "lastName", ignore = true)
+    //    @Mapping(source = "firstName", target = "lastName")
+    //    @Mapping(target = "lastName", ignore = true)
     UserResponse toUserResponse(User user);
 }

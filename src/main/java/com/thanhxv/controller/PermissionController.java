@@ -1,17 +1,20 @@
 package com.thanhxv.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.thanhxv.dto.request.ApiResponse;
 import com.thanhxv.dto.request.PermissionRequest;
 import com.thanhxv.dto.response.PermissionResponse;
 import com.thanhxv.service.PermissionService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/permission")
@@ -40,5 +43,4 @@ public class PermissionController {
         permissionService.delete(name);
         return ApiResponse.<Void>builder().build();
     }
-
 }

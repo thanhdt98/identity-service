@@ -1,12 +1,7 @@
 package com.thanhxv.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.thanhxv.dto.request.UserCreationRequest;
-import com.thanhxv.dto.response.UserResponse;
-import com.thanhxv.service.UserService;
-import lombok.extern.log4j.Log4j2;
+import java.time.LocalDate;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentMatchers;
@@ -21,7 +16,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.thanhxv.dto.request.UserCreationRequest;
+import com.thanhxv.dto.response.UserResponse;
+import com.thanhxv.service.UserService;
+
+import lombok.extern.log4j.Log4j2;
 
 @SpringBootTest
 @Log4j2
@@ -90,10 +91,9 @@ public class UserControllerTest {
 
         // WHEN
         // Test cai gi
-        mockMvc.perform(MockMvcRequestBuilders
-                .post("/users")
-                .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(content))
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
+                        .contentType(MediaType.APPLICATION_JSON_VALUE)
+                        .content(content))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(1000));
 
@@ -113,15 +113,11 @@ public class UserControllerTest {
         Mockito.when(userService.createUser(ArgumentMatchers.any())).thenReturn(userResponse);
 
         // WHEN THEN
-        mockMvc.perform(MockMvcRequestBuilders
-                        .post("/users")
+        mockMvc.perform(MockMvcRequestBuilders.post("/users")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .content(content))
                 .andExpect(MockMvcResultMatchers.status().isBadRequest())
                 .andExpect(MockMvcResultMatchers.jsonPath("code").value(1003))
-                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Username must be at least 4 characters"))
-        ;
-
+                .andExpect(MockMvcResultMatchers.jsonPath("message").value("Username must be at least 4 characters"));
     }
-
 }

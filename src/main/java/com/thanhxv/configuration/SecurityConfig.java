@@ -11,14 +11,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
-import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-
-import javax.crypto.spec.SecretKeySpec;
 
 @Configuration
 @EnableWebSecurity
@@ -27,9 +22,7 @@ import javax.crypto.spec.SecretKeySpec;
  */
 @EnableMethodSecurity
 public class SecurityConfig {
-    private final String[] PUBLIC_ENDPOINTS = {
-            "/users",
-            "/auth/token", "auth/introspect", "auth/logout", "auth/refresh"
+    private final String[] PUBLIC_ENDPOINTS = {"/users", "/auth/token", "auth/introspect", "auth/logout", "auth/refresh"
     };
 
     @Value("${jwt.signerKey}")
@@ -37,7 +30,6 @@ public class SecurityConfig {
 
     @Autowired
     private CustomJwtDecoder jwtDecoder;
-
 
     /**
      * Config for spring security 6. spring boot 3
@@ -48,19 +40,20 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.authorizeHttpRequests(requests ->
-                requests.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-                        /**
-                         * explain SCOPE_ADMIN co the custom SCOPE_ bang config .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                         * neu custom thanh ROLE_ thi co the dung .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") vi Spring se tu tim dc role ROLE_ADMIN
-                         */
-                        /**
-                         * comment due to use Method Authorization @PreAuthorization
-                         */
-//                        .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
-//                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
-//                        .requestMatchers(HttpMethod.GET, "/users").hasAnyAuthority("ROLE_ADMIN")
-                        .anyRequest().authenticated());
+        httpSecurity.authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
+                .permitAll()
+                /**
+                 * explain SCOPE_ADMIN co the custom SCOPE_ bang config .jwtAuthenticationConverter(jwtAuthenticationConverter())
+                 * neu custom thanh ROLE_ thi co the dung .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") vi Spring se tu tim dc role ROLE_ADMIN
+                 */
+                /**
+                 * comment due to use Method Authorization @PreAuthorization
+                 */
+                //                        .requestMatchers(HttpMethod.GET, "/users").hasRole(Role.ADMIN.name())
+                //                        .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN")
+                //                        .requestMatchers(HttpMethod.GET, "/users").hasAnyAuthority("ROLE_ADMIN")
+                .anyRequest()
+                .authenticated());
 
         /**
          * note
@@ -76,25 +69,22 @@ public class SecurityConfig {
          * 2. khi thuc hien validate authentication can 1 jwt decoder de biet token co hop le khong
          * 3. SCOPE_ co the custom thanh ROLE_ bang config .jwtAuthenticationConverter(jwtAuthenticationConverter())
          */
-        httpSecurity.oauth2ResourceServer(oauth2ResourceServer ->
-                oauth2ResourceServer
-                        .jwt(jwtConfigurer -> jwtConfigurer
-                                /**
-                                 * explain
-                                 * comment due to add logout feature
-                                 * instead of, using CustomJwtDecoder for check token invalid and has been logout
-                                 */
-//                                .decoder(jwtDecoder())
-                                .decoder(jwtDecoder)
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter())
-                        )
+        httpSecurity.oauth2ResourceServer(oauth2ResourceServer -> oauth2ResourceServer
+                .jwt(jwtConfigurer -> jwtConfigurer
                         /**
-                         * explain khi authentication fail thi dieu huong di dau. o day chi can tra error message
-                         * can implements AuthenticationEntryPoint interface
-                         * chi dung o day nen k can tao bean
+                         * explain
+                         * comment due to add logout feature
+                         * instead of, using CustomJwtDecoder for check token invalid and has been logout
                          */
-                        .authenticationEntryPoint(new JwtAuthenticationEntryPoint())
-        );
+                        //                                .decoder(jwtDecoder())
+                        .decoder(jwtDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                /**
+                 * explain khi authentication fail thi dieu huong di dau. o day chi can tra error message
+                 * can implements AuthenticationEntryPoint interface
+                 * chi dung o day nen k can tao bean
+                 */
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
@@ -111,7 +101,7 @@ public class SecurityConfig {
         /**
          * Do co Role va Permission nen se add prefix ROLE_ cho Role khi gen token
          */
-//        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
+        //        jwtGrantedAuthoritiesConverter.setAuthorityPrefix("ROLE_");
         jwtGrantedAuthoritiesConverter.setAuthorityPrefix("");
 
         JwtAuthenticationConverter jwtAuthenticationConverter = new JwtAuthenticationConverter();
@@ -125,24 +115,23 @@ public class SecurityConfig {
      * instead of, using CustomJwtDecoder for check token invalid and has been logout
      * @return
      */
-//    @Bean
-//    JwtDecoder jwtDecoder() {
-//        /**
-//         * explain
-//         * HS512 la thuat toan khi gen token
-//         */
-//        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
-//
-//        NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder
-//                .withSecretKey(secretKeySpec)
-//                .macAlgorithm(MacAlgorithm.HS512)
-//                .build();
-//        return nimbusJwtDecoder;
-//    }
+    //    @Bean
+    //    JwtDecoder jwtDecoder() {
+    //        /**
+    //         * explain
+    //         * HS512 la thuat toan khi gen token
+    //         */
+    //        SecretKeySpec secretKeySpec = new SecretKeySpec(signerKey.getBytes(), "HS512");
+    //
+    //        NimbusJwtDecoder nimbusJwtDecoder = NimbusJwtDecoder
+    //                .withSecretKey(secretKeySpec)
+    //                .macAlgorithm(MacAlgorithm.HS512)
+    //                .build();
+    //        return nimbusJwtDecoder;
+    //    }
 
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
 }
-

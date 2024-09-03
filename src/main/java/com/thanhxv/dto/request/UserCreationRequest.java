@@ -1,12 +1,14 @@
 package com.thanhxv.dto.request;
 
-import com.thanhxv.validator.DobConstraint;
-import jakarta.validation.constraints.Size;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.validation.constraints.Size;
+
+import com.thanhxv.validator.DobConstraint;
+
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Data
 @NoArgsConstructor
@@ -23,10 +25,12 @@ public class UserCreationRequest {
 
     @Size(min = 6, message = "INVALID_PASSWORD")
     String password;
+
     String firstName;
     String lastName;
 
     @DobConstraint(min = 2, message = "INVALID_DOB")
     LocalDate dob;
+
     List<String> roles;
 }

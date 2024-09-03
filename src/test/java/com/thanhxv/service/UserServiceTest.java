@@ -1,12 +1,13 @@
 package com.thanhxv.service;
 
-import com.thanhxv.dto.request.UserCreationRequest;
-import com.thanhxv.dto.response.UserResponse;
-import com.thanhxv.entity.Role;
-import com.thanhxv.entity.User;
-import com.thanhxv.exception.AppException;
-import com.thanhxv.repository.RoleRepository;
-import com.thanhxv.repository.UserRepository;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDate;
+import java.util.*;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,13 +17,13 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.when;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.time.LocalDate;
-import java.util.*;
+import com.thanhxv.dto.request.UserCreationRequest;
+import com.thanhxv.dto.response.UserResponse;
+import com.thanhxv.entity.Role;
+import com.thanhxv.entity.User;
+import com.thanhxv.exception.AppException;
+import com.thanhxv.repository.RoleRepository;
+import com.thanhxv.repository.UserRepository;
 
 @SpringBootTest
 /**
@@ -71,10 +72,8 @@ public class UserServiceTest {
                 .dob(LocalDate.of(1990, 1, 1))
                 .build();
 
-        role = Optional.of(Role.builder()
-                .name(com.thanhxv.enums.Role.USER.name())
-                .build());
-
+        role = Optional.of(
+                Role.builder().name(com.thanhxv.enums.Role.USER.name()).build());
     }
 
     @Test
@@ -134,5 +133,4 @@ public class UserServiceTest {
 
         Assertions.assertThat(exception.getErrorCode().getCode()).isEqualTo(1005);
     }
-
 }
