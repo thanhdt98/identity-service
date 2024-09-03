@@ -106,6 +106,13 @@ public class AuthenticationService {
         }
     }
 
+    /**
+     *
+     * @param request
+     * @return
+     * @throws ParseException
+     * @throws JOSEException
+     */
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         var signJWT = verifyToken(request.getToken(), true);
 
@@ -133,6 +140,10 @@ public class AuthenticationService {
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
+        /**
+         * isRefresh == true => co nghia la neu token dc tao vao luc signedJWT.getJWTClaimsSet().getIssueTime()
+         * + REFRESHABLE_DURATION is valid thi => token van hop le (van co the refresh dc)
+         */
         Date expiration = (isRefresh)
                 ? new Date(signedJWT.getJWTClaimsSet().getIssueTime().toInstant().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli())
                 : signedJWT.getJWTClaimsSet().getExpirationTime();
@@ -143,6 +154,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
+        // check logout
         if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID())) {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
