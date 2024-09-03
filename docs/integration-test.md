@@ -6,6 +6,8 @@
 - Test Container ra doi de thuc hien Integration Test de khi test xong thi moi thu bien mat k luu lai
 ---
 # Test Container
+## Link reference
+- https://www.youtube.com/watch?v=l_YtIt8b7fE&list=PL2xsxmVse9IaxzE8Mght4CFltGOqcG6FC&index=24
 ## Define
 - Khi chay Unit Test thi se init 1 Container cua service va co the connect toi no va thuc hien nhu chay binh thuong
 
