@@ -61,3 +61,12 @@ mvn spotless:check
 cd ..
 mvn spotless:apply
 ```
+
+## How to use in code
+- Muon spotless khong format 1 doan nao do
+```java
+//spotless:off
+log.info("khong muon cho spotless format");
+//spotless:on
+log.info("tiep tuc cho phep spotless format");
+```
