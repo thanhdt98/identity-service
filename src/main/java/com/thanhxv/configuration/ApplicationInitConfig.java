@@ -1,22 +1,23 @@
 package com.thanhxv.configuration;
 
-import com.thanhxv.entity.User;
-import com.thanhxv.enums.Role;
-import com.thanhxv.repository.RoleRepository;
-import com.thanhxv.repository.UserRepository;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.log4j.Log4j2;
-import org.springframework.beans.factory.annotation.Autowired;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.HashSet;
-import java.util.Set;
+import com.thanhxv.entity.User;
+import com.thanhxv.enums.Role;
+import com.thanhxv.repository.RoleRepository;
+import com.thanhxv.repository.UserRepository;
+
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.log4j.Log4j2;
 
 @Configuration
 @RequiredArgsConstructor

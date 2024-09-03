@@ -1,17 +1,20 @@
 package com.thanhxv.exception;
 
-import com.thanhxv.dto.request.ApiResponse;
+import java.nio.file.AccessDeniedException;
+import java.util.Map;
+import java.util.Objects;
+
 import jakarta.validation.ConstraintViolation;
-import lombok.extern.log4j.Log4j2;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import java.nio.file.AccessDeniedException;
-import java.util.Map;
-import java.util.Objects;
+import com.thanhxv.dto.request.ApiResponse;
+
+import lombok.extern.log4j.Log4j2;
 
 @ControllerAdvice
 @Log4j2
@@ -98,5 +101,4 @@ public class GlobalExceptionHandler {
 
         return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
     }
-
 }

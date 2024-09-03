@@ -1,16 +1,18 @@
 package com.thanhxv.controller;
 
+import java.util.List;
+
+import org.springframework.web.bind.annotation.*;
+
 import com.thanhxv.dto.request.ApiResponse;
 import com.thanhxv.dto.request.RoleRequest;
 import com.thanhxv.dto.response.RoleResponse;
 import com.thanhxv.service.RoleService;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/roles")
@@ -39,5 +41,4 @@ public class RoleController {
         roleService.delete(name);
         return ApiResponse.<Void>builder().build();
     }
-
 }

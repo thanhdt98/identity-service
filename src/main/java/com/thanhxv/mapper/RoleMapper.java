@@ -1,10 +1,11 @@
 package com.thanhxv.mapper;
 
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+
 import com.thanhxv.dto.request.RoleRequest;
 import com.thanhxv.dto.response.RoleResponse;
 import com.thanhxv.entity.Role;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 /**
  * componentModel = "spring"

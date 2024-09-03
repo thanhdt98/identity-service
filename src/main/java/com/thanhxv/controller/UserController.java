@@ -1,21 +1,22 @@
 package com.thanhxv.controller;
 
+import java.util.List;
+
+import jakarta.validation.Valid;
+
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
+
 import com.thanhxv.dto.request.ApiResponse;
 import com.thanhxv.dto.request.UserCreationRequest;
 import com.thanhxv.dto.request.UserUpdateRequest;
-import com.thanhxv.dto.response.PermissionResponse;
 import com.thanhxv.dto.response.UserResponse;
-import com.thanhxv.entity.User;
 import com.thanhxv.service.UserService;
-import jakarta.validation.Valid;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -56,8 +57,7 @@ public class UserController {
     }
 
     @PutMapping("/{userId}")
-    UserResponse updateUser(@PathVariable(name = "userId") String userId,
-                    @RequestBody UserUpdateRequest request) {
+    UserResponse updateUser(@PathVariable(name = "userId") String userId, @RequestBody UserUpdateRequest request) {
         return userService.updateUser(userId, request);
     }
 }

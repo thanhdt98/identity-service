@@ -1,17 +1,19 @@
 package com.thanhxv.service;
 
+import java.util.List;
+
+import org.springframework.stereotype.Service;
+
 import com.thanhxv.dto.request.PermissionRequest;
 import com.thanhxv.dto.response.PermissionResponse;
 import com.thanhxv.entity.Permission;
 import com.thanhxv.mapper.PermissionMapper;
 import com.thanhxv.repository.PermissionRepository;
+
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,5 +37,4 @@ public class PermissionService {
     public void delete(String name) {
         permissionRepository.deleteById(name);
     }
-
 }
