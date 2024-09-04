@@ -1,5 +1,5 @@
 server:
-  port: 8081
+  port: 8080
   servlet:
     context-path: /identity
 
@@ -22,5 +22,5 @@ spring:
         order_updates: true
 jwt:
   signerKey: "6092916c40862985551d0bc3e27ac332f9a824afe36ca89c418f0de63fe359f1"
-  valid-duration: 30 # second
-  refreshable-duration: 120 # second for test
+  valid-duration: 3600 # second
+  refreshable-duration: 36000 # second for test
