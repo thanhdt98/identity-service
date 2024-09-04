@@ -51,7 +51,7 @@ public class UserController {
         return userService.getUser(userId);
     }
 
-    @GetMapping("/myInfo")
+    @GetMapping("/my-info")
     UserResponse getMyInfo() {
         return userService.getMyInfo();
     }

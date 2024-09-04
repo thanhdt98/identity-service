@@ -14,6 +14,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -40,8 +43,11 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
 
-        httpSecurity.authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS)
-                .permitAll()
+        httpSecurity
+                .authorizeHttpRequests(requests -> requests.requestMatchers(HttpMethod.OPTIONS)
+                        .permitAll())
+                .authorizeHttpRequests(requests -> requests.requestMatchers(PUBLIC_ENDPOINTS)
+                        .permitAll()
                 /**
                  * explain SCOPE_ADMIN co the custom SCOPE_ bang config .jwtAuthenticationConverter(jwtAuthenticationConverter())
                  * neu custom thanh ROLE_ thi co the dung .requestMatchers(HttpMethod.GET, "/users").hasRole("ADMIN") vi Spring se tu tim dc role ROLE_ADMIN
@@ -59,7 +65,7 @@ public class SecurityConfig {
          * note
          * jwtConfigurer.jwkSetUri
          * neu cau hinh voi resource server thu 3 thi chi can cung cap uri
-         * ma o day khong phai authen voi Identity Provider (IDP) ben ngoai chi muon authen cho jwt chung ta gen
+         * ma o day khong phai authenticate voi Identity Provider (IDP) ben ngoai chi muon authen cho jwt chung ta gen
          * nen o day chi can jwt decoder giup decode jwt token
          */
         /**
@@ -88,6 +94,30 @@ public class SecurityConfig {
 
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
         return httpSecurity.build();
+    }
+
+    @Bean
+    public CorsFilter corsFilter() {
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+
+        /**
+         * explain cho phep truy cap tu nguon nao
+         */
+//        corsConfiguration.addAllowedOrigin("http://localhost:3000");
+        corsConfiguration.addAllowedOrigin("*");
+        corsConfiguration.addAllowedMethod("*");
+        corsConfiguration.addAllowedHeader("*");
+
+        /**
+         * explain UrlBasedCorsConfigurationSource de khai bao cors cho tung endpoint
+         */
+        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
+        /**
+         * expalin apply cors cho toan bo endpoint
+         */
+        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
+
+        return new CorsFilter(urlBasedCorsConfigurationSource);
     }
 
     /**
@@ -134,4 +164,5 @@ public class SecurityConfig {
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(10);
     }
+
 }
