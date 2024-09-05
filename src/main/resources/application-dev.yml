@@ -1,3 +1,7 @@
+server:
+  servlet:
+    context-path: /identity-dev
 jwt:
+  signerKey: "6092916c40862985551d0bc3e27ac332f9a824afe36ca89c418f0de63fe359f1"
   valid-duration: 7200 # second
   refreshable-duration: 72000 # second
