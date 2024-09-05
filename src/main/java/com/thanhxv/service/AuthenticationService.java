@@ -83,6 +83,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
         }
 
+        log.info("SIGNER_KEY {}", SIGNER_KEY);
         var token = generateToken(user);
         return AuthenticationResponse.builder()
                 .token(token)
