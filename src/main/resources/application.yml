@@ -7,8 +7,8 @@ spring:
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity_service}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    username: root
-    password: 123456
+    username: ${DBMS_USERNAME:root}
+    password: ${DBMS_PASSWORD:123456}
   jpa:
     database: mysql
     show_sql: true
