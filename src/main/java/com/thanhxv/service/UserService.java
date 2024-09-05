@@ -59,7 +59,7 @@ public class UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        return userMapper.toUserResponse(userRepository.save(user));
+        return userMapper.toUserResponse(user);
     }
 
     /**
