@@ -37,6 +37,21 @@
 </plugin>
 ```
 
+## Giai thich
+### `excution`
+```shell
+<executions>
+    <execution>
+        <phase>compile</phase>
+        <goals>
+            <goal>apply</goal>
+        </goals>
+    </execution>
+</executions>
+```
+- Khi `compile` thi spotless se `apply` format 
+- Co the su dung `check` de **cicd** kiem tra format truoc khi **build**
+
 ## Format
 ### By maven 
 - Maven => Plugins => `spotless:check`
