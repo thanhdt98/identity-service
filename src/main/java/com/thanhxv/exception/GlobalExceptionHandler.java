@@ -1,12 +1,12 @@
 package com.thanhxv.exception;
 
-import java.nio.file.AccessDeniedException;
 import java.util.Map;
 import java.util.Objects;
 
 import jakarta.validation.ConstraintViolation;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
